@@ -552,9 +552,13 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
 .content-section { max-width: 100%; overflow-x: hidden; }
 
 /* --- iOS TOUCH FIX --- */
-.acc-hdr, .accordion-trigger, .it-btn, .chapter-header, .nav-item, .copy-btn, .stage-step {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
+/* Force iOS to recognise all interactive elements as clickable */
+.acc-hdr, .accordion-trigger, .it-btn, .chapter-header, .nav-item, .copy-btn,
+.stage-step, .tb-pill, .hamburger, .sp-tab-btn, .sp-btn-save, .sp-btn-cancel,
+.sp-toggle, .sp-sub-tab, .sp-product-row, .sc-nav-row, .cadence-toggle,
+[onclick] {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(135,206,235,0.15);
 }
 
 /* --- CONTENT AREA --- */
@@ -607,10 +611,14 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
 
 /* --- PILLAR GRID --- */
 .pillar-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 20px 0;
+}
+.pillar-grid .pillar-card {
+  flex: 0 0 calc(50% - 6px);
+  box-sizing: border-box;
 }
 .pillar-card {
   background: var(--white);
@@ -844,6 +852,9 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
 .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .accordion-body.open { max-height: 6000px; }
 .accordion-body-inner { padding: 24px 22px; }
+/* Dark section body (Pipeline Overview, Call Control, Trial Close) */
+.dark-section-body { display: none; }
+.dark-section-body.open { display: block; }
 
 /* --- COPY BLOCK --- */
 .copy-block {
@@ -1093,6 +1104,29 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
 @media (min-width: 901px) {
   .sidebar-toggle { display: flex; }
 }
+/* Disable hover highlights on touch devices — prevents ghost highlights during scroll */
+@media (hover: none) {
+  .accordion-trigger:hover { background: transparent !important; }
+  .accordion-trigger[style*="var(--black)"]:hover { background: var(--black) !important; }
+  .accordion-trigger:hover .accordion-icon { background: transparent !important; }
+  .acc-hdr:hover { background: transparent !important; }
+  .acc-item.open .acc-hdr:hover { background: #e8f5fc !important; }
+  .fp:hover { background: var(--gray-light) !important; border-color: var(--gray-border) !important; color: #555 !important; }
+  .fp.warn:hover { background: var(--warning-bg) !important; border-color: var(--warning-acc) !important; color: #92400e !important; }
+  .fp.win:hover { background: #f0fdf4 !important; border-color: #2ecc71 !important; color: #166534 !important; }
+  .fp.lose:hover { background: var(--danger-bg) !important; border-color: #ef4444 !important; color: #991b1b !important; }
+  .cadence-toggle:hover { background: #000 !important; }
+  .nav-item:hover { background: transparent !important; }
+  .chapter-header:hover { background: transparent !important; }
+  .back-to-top:hover { background: var(--black) !important; }
+  .sc-nav-row:hover { background: transparent !important; }
+  .copy-btn:hover { background: transparent !important; color: var(--sky) !important; }
+  .sky-copy-btn:hover { background: var(--sky) !important; }
+  .stage-step:hover { filter: none !important; }
+  .stage-step-tc:hover { background: var(--black) !important; }
+  .spr-expand-btn:hover { background: transparent !important; }
+  .spr-box.dark .spr-expand-btn:hover { background: transparent !important; }
+}
 @media (max-width: 900px) {
   .hamburger { display: flex; }
   .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; transition: transform 0.3s ease; }
@@ -1106,7 +1140,7 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
   .stage-step:first-child, .stage-step:last-child { clip-path: none; }
   .rc-body { grid-template-columns: 1fr; }
   .rc-col:first-child { border-right: none; border-bottom: 1px solid var(--gray-border); }
-  .pillar-grid { grid-template-columns: 1fr; }
+  .pillar-grid .pillar-card { flex: 0 0 100%; }
   .values-grid { grid-template-columns: 1fr; }
   .equipment-grid { grid-template-columns: 1fr; }
   [style*="grid-template-columns: 1fr 1fr 1fr"],
@@ -1117,6 +1151,35 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
   [style*="padding: 24px 36px 32px"] {
     padding: 20px 16px 24px !important;
   }
+  /* Pipeline Management — 2x2 grid on mobile */
+  .pipe-mgmt-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 20px 16px !important; gap: 16px !important; }
+  /* Flow strip — scrollable pills on mobile */
+  .flow-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .flow-strip { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .fp { flex: 0 0 auto !important; min-width: max-content !important; padding: 5px 8px !important; overflow: visible !important; text-overflow: unset !important; }
+  .fa { flex-shrink: 0; }
+  /* Cadence table padding on mobile */
+  [id$="-cadence-body"] { padding: 0 16px 20px !important; }
+  /* Settings modal — reduce padding, wrap button bar */
+  .sp-modal { padding: 16px !important; max-width: 100% !important; }
+  .sp-modal-btns { flex-wrap: wrap !important; }
+  .sp-modal-btns button { flex: 1 1 calc(50% - 5px) !important; min-width: 0 !important; padding: 9px 8px !important; font-size: 9px !important; text-align: center !important; }
+  /* Edit Product modal — reorder for mobile 2x2: orange resets top, close+save bottom */
+  #ep-modal-btns { display: flex !important; flex-wrap: wrap !important; }
+  #ep-modal-btns #ep-reset-price-btn,
+  #ep-modal-btns #ep-reset-price-expiry-btn { order: 1 !important; }
+  #ep-modal-btns button[onclick="epConfirmResetIncentive()"] { order: 2 !important; }
+  #ep-modal-btns #ep-cancel-close-btn { order: 3 !important; }
+  #ep-modal-btns button[onclick="saveEditProduct()"] { order: 4 !important; }
+  /* Pipeline management title + cadence toggle — reduce horizontal padding */
+  [style*="padding: 16px 36px"] { padding: 16px 16px !important; }
+  /* Cadence table — horizontal scroll */
+  [id$="-cadence-body"] table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; table-layout: fixed !important; }
+  [id$="-cadence-body"] td { white-space: normal !important; }
+  [id$="-cadence-body"] th,
+  [id$="-cadence-body"] td { width: 33.33% !important; }
+  /* Stage flow diagram — match mobile content padding */
+  .stage-flow { margin-left: -20px !important; margin-right: -20px !important; padding-left: 20px !important; padding-right: 20px !important; }
 }
 @media (max-width: 520px) {
   .topbar-brand .doc-name { display: none; }
@@ -2619,7 +2682,6 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
         <div class="section-meta">
           <span class="meta-pill highlight">Training Tool</span>
           <span class="meta-pill">Universal Framework</span>
-          <span class="meta-pill done">Complete</span>
         </div>
       </div>
 
@@ -2743,7 +2805,7 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
               <div class="accordion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
 <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Controlling the Sale</div>
             </button>
-            <div style="background: var(--black); padding: 24px 36px 32px;">
+            <div class="dark-section-body open" style="background: var(--black); padding: 24px 36px 32px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
                 <div style="border-left: 3px solid var(--sky); padding-left: 16px;">
                   <div style="font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 8px;">The Principle</div>
@@ -3121,7 +3183,7 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
               <div class="accordion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
 <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Trial Close</div>
             </button>
-            <div style="background: var(--black); padding: 24px 36px 32px;">
+            <div class="dark-section-body open" style="background: var(--black); padding: 24px 36px 32px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
                 <div style="border-left: 3px solid var(--sky); padding-left: 16px;">
                   <div style="font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 8px;">What it is</div>
@@ -4314,7 +4376,7 @@ body.sidebar-rail .main { margin-left: var(--sidebar-rail); }
                     <div class="pillar-name">Education Business</div>
                     <div class="pillar-desc">Movement education and basic nutrition guidance. Empowering members to understand their body and own their health — not just follow instructions.</div>
                   </div>
-                  <div class="pillar-card featured" style="grid-column: span 2;">
+                  <div class="pillar-card featured" style="flex: 0 0 100%;">
                     <div class="pillar-num">Pillar 05</div>
                     <div class="pillar-name">Sales & Service Business</div>
                     <div class="pillar-desc">We grow by selling well and serving better. Sales isn't separate from service — it's an expression of it. When you genuinely understand what a member needs and connect them to the right product, that's the job done right.</div>
@@ -6392,7 +6454,7 @@ Notes:</textarea>
           <div class="accordion-body-inner">
             <div class="stage-goal" style="margin-bottom: 16px;">The pipeline displays as a Kanban board — each column is a stage, and each person is a card. Clicking a card opens the client modal where you can view contact details, call notes, tasks, and automations.</div>
             <table class="info-table" style="margin-bottom: 16px;">
-              <thead><tr><th style="width: 160px;">Term</th><th>What it means</th></tr></thead>
+              <thead><tr><th style="width: 40%;">Term</th><th>What it means</th></tr></thead>
               <tbody>
                 <tr><td><strong>Stage</strong></td><td>A column on the board. Represents where the person is in the journey. Each stage has a defined action.</td></tr>
                 <tr><td><strong>Card</strong></td><td>A person. One card per person per pipeline. Holds contact details, notes, tasks, and history.</td></tr>
@@ -6401,7 +6463,7 @@ Notes:</textarea>
             </table>
             <div class="section-label" style="margin-bottom: 12px;">Statuses</div>
             <table class="info-table">
-              <thead><tr><th style="width: 160px;">Status</th><th>When to use it</th></tr></thead>
+              <thead><tr><th style="width: 40%;">Status</th><th>When to use it</th></tr></thead>
               <tbody>
                 <tr><td><strong>Open</strong></td><td>Default. Card is active — you are working this person.</td></tr>
                 <tr><td><strong>Won</strong></td><td>Person has purchased. Journey complete. System may apply this automatically.</td></tr>
@@ -6453,7 +6515,7 @@ Notes:</textarea>
           <div class="accordion-body-inner">
             <div class="stage-goal" style="margin-bottom: 16px;">A pipeline is only useful if it reflects reality. Cards in the wrong stage, no tasks set, interactions not logged — these break the board for everyone. Pipeline hygiene is the discipline of keeping it accurate at all times.</div>
             <table class="info-table" style="margin-bottom: 16px;">
-              <thead><tr><th style="width: 220px;">Rule</th><th>What it means</th></tr></thead>
+              <thead><tr><th style="width: 40%;">Rule</th><th>What it means</th></tr></thead>
               <tbody>
                 <tr><td><strong>Move the card immediately</strong></td><td>As soon as an outcome is clear — answered, booked, no answer, purchased — move the card. Don't leave it and come back later.</td></tr>
                 <tr><td><strong>Always set a task</strong></td><td>If action is needed at a future date, set a task before you move on. No task means no follow-up. No follow-up means a lost opportunity.</td></tr>
@@ -6510,7 +6572,7 @@ Notes:</textarea>
               <div class="rule-text">[action] — [outcome] — [next step or stage moved to]</div>
             </div>
             <table class="info-table" style="margin-bottom: 16px;">
-              <thead><tr><th>Example Note</th><th>When to use it</th></tr></thead>
+              <thead><tr><th style="width: 40%;">Example Note</th><th>When to use it</th></tr></thead>
               <tbody>
                 <tr><td>call 1 — no answer — voicemail left — cna1 sms sent</td><td>First call unanswered</td></tr>
                 <tr><td>call 2 — answered — follow up agreed — task set</td><td>Spoke to lead, agreed callback</td></tr>
@@ -6561,7 +6623,7 @@ Notes:</textarea>
         <div style="background: var(--black); padding: 16px 36px;">
           <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Leads Pipeline Management</div>
         </div>
-        <div style="background: var(--black); border-top: 1px solid var(--gray-border); padding: 24px 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        <div class="pipe-mgmt-grid" style="background: var(--black); border-top: 1px solid var(--gray-border); padding: 24px 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
           <div style="border-left: 3px solid var(--sky); padding-left: 16px;">
             <div style="font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 8px;">Open</div>
             <div style="font-size: 13px; color: #ccc; line-height: 1.6;">Open the stage you're working.</div>
@@ -6654,7 +6716,7 @@ Notes:</textarea>
           <div class="accordion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
           <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Leads Pipeline Overview</div>
         </button>
-        <div style="display: none; padding: 8px; background: var(--gray-light); border: 1px solid var(--gray-border); border-top: none;">
+        <div class="dark-section-body" style="padding: 8px; background: var(--gray-light); border: 1px solid var(--gray-border); border-top: none;">
           <div style="display: flex; flex-direction: column; gap: 4px;">
 
             <!-- 1. Accessing the Pipeline -->
@@ -6707,7 +6769,7 @@ Notes:</textarea>
                   </div>
                   <table class="info-table">
                     <thead>
-                      <tr><th style="width: 160px;">Stage</th><th>What it means</th></tr>
+                      <tr><th style="width: 40%;">Stage</th><th>What it means</th></tr>
                     </thead>
                     <tbody>
                       <tr><td>New Lead</td><td>A new enquiry has come in. No contact made yet. Call immediately.</td></tr>
@@ -6726,7 +6788,7 @@ Notes:</textarea>
                   <div class="stage-goal" style="margin-bottom: 12px;">Statuses are applied when a card is dragged out of the pipeline entirely. They appear at the bottom of the screen when dragging. The default status is <strong>Open</strong> — all active pipeline cards are Open.</div>
                   <table class="info-table">
                     <thead>
-                      <tr><th style="width: 160px;">Status</th><th>When to use it</th></tr>
+                      <tr><th style="width: 40%;">Status</th><th>When to use it</th></tr>
                     </thead>
                     <tbody>
                       <tr><td>Won</td><td>Lead has purchased — membership, class pack, or Intro Offer. Journey complete.</td></tr>
@@ -6762,7 +6824,7 @@ Notes:</textarea>
                   </div>
                   <table class="info-table">
                     <thead>
-                      <tr><th style="width: 50%;">Outcome</th><th>Move card to</th></tr>
+                      <tr><th style="width: 40%;">Outcome</th><th>Move card to</th></tr>
                     </thead>
                     <tbody>
                       <tr><td>Called — no answer (attempt 1)</td><td>CNA 1 — send CNA 1 SMS</td></tr>
@@ -6797,7 +6859,7 @@ Notes:</textarea>
                   <div class="section-label" style="margin-bottom: 8px;">Non-Negotiables — Every Shift</div>
                   <div class="stage-goal" style="margin-bottom: 12px;">Complete these every shift before anything else. If the pipeline is too large to work in full, start here — then rotate through the remaining stages one at a time across subsequent shifts.</div>
                   <table class="info-table" style="margin-bottom: 20px;">
-                    <thead><tr><th style="width: 200px;">Stage</th><th>Why it can't wait</th></tr></thead>
+                    <thead><tr><th style="width: 40%;">Stage</th><th>Why it can't wait</th></tr></thead>
                     <tbody>
                       <tr><td style="color: var(--sky); font-weight: 700;">① &nbsp;New Lead</td><td>New enquiry — call immediately while interest is highest.</td></tr>
                       <tr><td style="color: var(--sky); font-weight: 700;">② &nbsp;Follow Up Required</td><td>Task is due today or overdue — action every card with a due task.</td></tr>
@@ -6808,7 +6870,7 @@ Notes:</textarea>
                   <div class="section-label" style="margin-bottom: 8px;">Priority Rotation — One Stage Per Shift</div>
                   <div class="stage-goal" style="margin-bottom: 12px;">After completing the non-negotiables, work the next stage on this list. Finish the stage completely before moving on. If your shift ends mid-stage, leave a handover note so the next staff member can complete it before moving to the next stage.</div>
                   <table class="info-table" style="margin-bottom: 16px;">
-                    <thead><tr><th style="width: 200px;">Stage</th><th>Action</th></tr></thead>
+                    <thead><tr><th style="width: 40%;">Stage</th><th>Action</th></tr></thead>
                     <tbody>
                       <tr><td style="color: var(--sky); font-weight: 700;">⑤ &nbsp;CNA 1, 2, 3</td><td>Work through call-no-answer leads in order. One attempt per stage per shift.</td></tr>
                       <tr><td style="color: #888; font-weight: 700;">Monthly only</td><td>Future Follow Up — check at the start of every month only. Move any leads with a due date this month into Follow Up Required.</td></tr>
@@ -6831,7 +6893,7 @@ Notes:</textarea>
                 <div class="accordion-body-inner">
                   <table class="info-table">
                     <thead>
-                      <tr><th>Example Note</th><th>When to use it</th></tr>
+                      <tr><th style="width: 40%;">Example Note</th><th>When to use it</th></tr>
                     </thead>
                     <tbody>
                       <tr><td>call 1 — no answer — voicemail left — cna1 sms sent</td><td>First call unanswered</td></tr>
@@ -6948,7 +7010,7 @@ Notes:</textarea>
               <span class="spr-time">~30 sec</span>
             </div>
             <div class="spr-stage-body">
-              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I'm curious, what made you look into STRONG?"</div>
+              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I'm curious though, what made you look into STRONG?"</div>
             </div>
           </div>
           <button class="spr-expand-btn" id="expand-btn-01" onclick="toggleExpand('01')">
@@ -7117,7 +7179,7 @@ Notes:</textarea>
               <span class="spr-name">Intro</span>
             </div>
             <div class="spr-stage-body">
-              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I'm curious, what made you look into STRONG?"</div>
+              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I'm curious though, what made you look into STRONG?"</div>
             </div>
           </div>
           <button class="spr-expand-btn" id="expand-btn-02" onclick="toggleExpand('02')">
@@ -7286,7 +7348,7 @@ Notes:</textarea>
               <span class="spr-name">Intro</span>
             </div>
             <div class="spr-stage-body">
-              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I'm curious, what made you look into STRONG?"</div>
+              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I'm curious though, what made you look into STRONG?"</div>
             </div>
           </div>
           <button class="spr-expand-btn" id="expand-btn-03" onclick="toggleExpand('03')">
@@ -7450,7 +7512,7 @@ Notes:</textarea>
               <span class="spr-name">Intro</span>
             </div>
             <div class="spr-stage-body">
-              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I'm curious, what made you look into STRONG?"</div>
+              <div class="spr-line">"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I'm curious though, what made you look into STRONG?"</div>
             </div>
           </div>
           <button class="spr-expand-btn" id="expand-btn-04" onclick="toggleExpand('04')">
@@ -8373,71 +8435,10 @@ Notes:`;
 function toggleAcc(hdr) { hdr.closest('.acc-item').classList.toggle('open'); }
 
 // ── iOS TOUCH FIX ──
-// iOS WebView / Safari doesn't reliably fire onclick on div elements.
-// This delegated listener catches taps on both accordion patterns.
-(function() {
-  var handled = false;
-  document.addEventListener('touchend', function(e) {
-    if (handled) return;
-    // New accordion pattern: div.acc-hdr
-    var hdr = e.target.closest('.acc-hdr');
-    if (hdr) {
-      handled = true;
-      e.preventDefault();
-      hdr.closest('.acc-item').classList.toggle('open');
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-    // Old accordion pattern: button.accordion-trigger
-    var trigger = e.target.closest('.accordion-trigger');
-    if (trigger) {
-      handled = true;
-      e.preventDefault();
-      var body = trigger.nextElementSibling;
-      var isOpen = trigger.classList.contains('open');
-      trigger.classList.toggle('open', !isOpen);
-      if (body) body.classList.toggle('open', !isOpen);
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-    // Inline tab buttons (it-btn)
-    var tabBtn = e.target.closest('.it-btn');
-    if (tabBtn && tabBtn.onclick) {
-      handled = true;
-      e.preventDefault();
-      tabBtn.onclick.call(tabBtn);
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-    // Chapter headers in sidebar
-    var chapHdr = e.target.closest('.chapter-header');
-    if (chapHdr && chapHdr.onclick) {
-      handled = true;
-      e.preventDefault();
-      chapHdr.onclick.call(chapHdr);
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-    // Nav items in sidebar
-    var navItem = e.target.closest('.nav-item');
-    if (navItem && navItem.onclick) {
-      handled = true;
-      e.preventDefault();
-      navItem.onclick.call(navItem);
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-    // Copy buttons
-    var copyBtn = e.target.closest('.copy-btn');
-    if (copyBtn && copyBtn.onclick) {
-      handled = true;
-      e.preventDefault();
-      copyBtn.onclick.call(copyBtn);
-      setTimeout(function() { handled = false; }, 300);
-      return;
-    }
-  }, {passive: false});
-})();
+// iOS requires a touchstart listener on the document to enable click/onclick
+// events on non-anchor, non-button elements (divs with onclick).
+// This empty passive listener is the standard fix.
+document.addEventListener('touchstart', function(){}, {passive: true});
 
 function flashTarget(id) {
   var el = document.getElementById(id);
@@ -8558,7 +8559,7 @@ function copyDiscovery(btn) {
       <div style="background: var(--black); padding: 16px 36px;">
         <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Intro Offer Pipeline Management</div>
       </div>
-      <div style="background: var(--black); border-top: 1px solid #1a1a1a; padding: 24px 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+      <div class="pipe-mgmt-grid" style="background: var(--black); border-top: 1px solid #1a1a1a; padding: 24px 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
         <div style="border-left: 3px solid var(--sky); padding-left: 16px;">
           <div style="font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 8px;">Open</div>
           <div style="font-size: 13px; color: #ccc; line-height: 1.6;">Open the stage you're working.</div>
@@ -8652,7 +8653,7 @@ function copyDiscovery(btn) {
         <div class="accordion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
         <div style="font-family: 'Kessel Heavy', sans-serif; font-size: 22px; color: var(--white); letter-spacing: 3px;">Intro Offer Pipeline Overview</div>
       </button>
-      <div style="display: none; padding: 8px; background: var(--gray-light); border: 1px solid var(--gray-border); border-top: none;">
+      <div class="dark-section-body" style="padding: 8px; background: var(--gray-light); border: 1px solid var(--gray-border); border-top: none;">
         <div style="display: flex; flex-direction: column; gap: 4px;">
 
           <!-- 1. Accessing the Pipeline -->
@@ -8758,7 +8759,7 @@ function copyDiscovery(btn) {
                 <div class="section-label" style="margin-bottom: 8px;">Non-Negotiables — Every Shift</div>
                 <div class="stage-goal" style="margin-bottom: 12px;">Complete these every shift before anything else. If the pipeline is too large to work in full, start here — then rotate through the remaining stages one at a time across subsequent shifts.</div>
                 <table class="info-table" style="margin-bottom: 20px;">
-                  <thead><tr><th style="width: 200px;">Stage</th><th>Why it can't wait</th></tr></thead>
+                  <thead><tr><th style="width: 40%;">Stage</th><th>Why it can't wait</th></tr></thead>
                   <tbody>
                     <tr><td style="color: var(--sky); font-weight: 700;">① &nbsp;Purchase</td><td>New purchase — welcome call immediately while motivation is highest.</td></tr>
                     <tr><td style="color: var(--sky); font-weight: 700;">② &nbsp;Future Follow Up</td><td>Task due today or overdue only — action every card with a due task.</td></tr>
@@ -8769,7 +8770,7 @@ function copyDiscovery(btn) {
                 <div class="section-label" style="margin-bottom: 8px;">Priority Rotation — One Stage Per Shift</div>
                 <div class="stage-goal" style="margin-bottom: 12px;">After completing the non-negotiables, work the next stage on this list. Finish the stage completely before moving on. If your shift ends mid-stage, leave a handover note so the next staff member can complete it before moving to the next stage.</div>
                 <table class="info-table" style="margin-bottom: 16px;">
-                  <thead><tr><th style="width: 200px;">Stage</th><th>Action</th></tr></thead>
+                  <thead><tr><th style="width: 40%;">Stage</th><th>Action</th></tr></thead>
                   <tbody>
                     <tr><td style="color: var(--sky); font-weight: 700;">⑤ &nbsp;Day 12 / Class 3–5</td><td>Conversion window — one call, one chance. Don't let this stage sit.</td></tr>
                     <tr><td style="color: var(--sky); font-weight: 700;">⑥ &nbsp;Expired</td><td>IO has expired without conversion — three call attempts to recover.</td></tr>
@@ -8798,7 +8799,7 @@ function copyDiscovery(btn) {
             <div class="accordion-body">
               <div class="accordion-body-inner">
                 <table class="info-table">
-                  <thead><tr><th>Example Note</th><th>When to use it</th></tr></thead>
+                  <thead><tr><th style="width: 40%;">Example Note</th><th>When to use it</th></tr></thead>
                   <tbody>
                     <tr><td>welcome call — no answer — voicemail left — wcna sms sent</td><td>Purchase stage — no answer</td></tr>
                     <tr><td>welcome call — answered — booked [date] — moved to wc complete</td><td>Purchase stage — answered, booking confirmed</td></tr>
@@ -11547,7 +11548,7 @@ function copyDiscovery(btn) {
     const body = trigger.nextElementSibling;
     const isOpen = trigger.classList.contains('open');
     trigger.classList.toggle('open', !isOpen);
-    body.style.display = isOpen ? 'none' : 'block';
+    body.classList.toggle('open', !isOpen);
   }
 
   // --- SIDEBAR CHAPTERS ---
@@ -12157,11 +12158,11 @@ function copyDiscovery(btn) {
 
   var SPT_DEFAULT_SCRIPTS = {
     new_lead:
-      'VOICEMAIL (if no answer):\n"Hey [Name], it\'s [Your Name] calling from STRONG Pilates. Just tried to give you a quick welcome call — no worries if you missed it. I was curious what made you look into STRONG, so give me a call back when you get a chance, or feel free to reply to my text. Speak soon."\n\nCALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I\'m curious, what made you look into STRONG?"',
+      'VOICEMAIL (if no answer):\n"Hey [Name], it\'s [Your Name] calling from STRONG Pilates. Just tried to give you a quick welcome call — no worries if you missed it. I was curious what made you look into STRONG, so give me a call back when you get a chance, or feel free to reply to my text. Speak soon."\n\nCALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I\'m curious though, what made you look into STRONG?"',
     cna1:
-      'CALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I\'m curious, what made you look into STRONG?"',
+      'CALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I\'m curious though, what made you look into STRONG?"',
     cna2:
-      'CALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account — just wanted to give you a quick welcome call. I\'m curious, what made you look into STRONG?"',
+      'CALL OPENER:\n"Hi [Name], this is [Your Name] from STRONG Pilates. Thanks for setting up your account with us — just wanted to give you a quick welcome call and see if you had any questions. I\'m curious though, what made you look into STRONG?"',
     active_conv:
       'RE-ENTRY OPENER:\n"Hey [Name], it\'s [Your Name] from STRONG — just calling to follow up. From our messages / last time we spoke, [brief summary of what you covered]. [Continue from wherever you are in the sales process — Discovery, Options, Recommendation, or Close.]"',
     follow_up:
@@ -12639,6 +12640,7 @@ function copyDiscovery(btn) {
   //  get Victor's config out of the box.
   // ══════════════════════════════════════════════════
   (function() {
+    try {
     var SEED_VERSION = 'launch_v2_2026-03-30';
     var seeded = localStorage.getItem('STRONG_WS_SEED_VERSION');
     if (seeded !== SEED_VERSION) {
@@ -12646,6 +12648,7 @@ function copyDiscovery(btn) {
       localStorage.setItem(DataStore._key, JSON.stringify(seed));
       localStorage.setItem('STRONG_WS_SEED_VERSION', SEED_VERSION);
     }
+    } catch(e) { /* localStorage unavailable on file:// or private browsing */ }
   })();
 
   // ══════════════════════════════════════════════════
